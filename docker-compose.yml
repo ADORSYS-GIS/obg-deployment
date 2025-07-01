@@ -50,7 +50,7 @@ services:
     image: ghcr.io/adorsys/open-banking-gateway:latest-develop
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.obg.rule=Host(`obg.local`)"
+      - "traefik.http.routers.obg.rule=Host(`obg.obgdeb.com`)"
       - "traefik.http.services.obg.loadbalancer.server.port=8085"
       - "traefik.http.routers.obg.entrypoints=web"
     volumes:
@@ -74,7 +74,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=opba-net"
-      - "traefik.http.routers.ui.rule=Host(`fintech-ui.local`)"
+      - "traefik.http.routers.ui.rule=Host(`fintech-ui.obgdeb.com`)"
       - "traefik.http.services.ui.loadbalancer.server.port=4200"
       - "traefik.http.routers.ui.entrypoints=web"
     depends_on:
@@ -90,7 +90,7 @@ services:
     image: ghcr.io/adorsys/fintech-server:latest-develop
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fintech.rule=Host(`fintech-server.local`)"
+      - "traefik.http.routers.fintech.rule=Host(`fintech-server.obgdeb.com`)"
       - "traefik.http.services.fintech.loadbalancer.server.port=8086"
       - "traefik.http.routers.fintech.entrypoints=web"
     depends_on:
@@ -110,7 +110,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=opba-net"
-      - "traefik.http.routers.consent.rule=Host(`consent.local`)"
+      - "traefik.http.routers.consent.rule=Host(`consent.obgdeb.com`)"
       - "traefik.http.services.consent.loadbalancer.server.port=4200"
       - "traefik.http.routers.consent.entrypoints=web"
     depends_on:
@@ -123,7 +123,7 @@ services:
     image: ghcr.io/adorsys/hbci-sandbox-server:latest-develop
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sandbox.rule=Host(`sandbox.local`)"
+      - "traefik.http.routers.sandbox.rule=Host(`sandbox.obgdeb.com`)"
       - "traefik.http.routers.sandbox.entrypoints=web"
       - "traefik.http.services.sandbox.loadbalancer.server.port=8090"
     networks:
