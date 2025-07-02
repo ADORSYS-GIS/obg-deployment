@@ -2,7 +2,7 @@ data "aws_route53_zone" "main" {
   name = var.domain_name
 }
 
-# Wildcard DNS record pointing to the NAT Gateway public IP
+# Wildcard DNS record pointing to the NAT Gateway's Elastic IP (EIP)
 resource "aws_route53_record" "wildcard" {
   zone_id = data.aws_route53_zone.main.zone_id
   name    = "*.${var.domain_name}"
@@ -15,7 +15,7 @@ resource "aws_route53_record" "wildcard" {
   }
 }
 
-# Main domain record pointing to the NAT Gateway public IP
+# Main domain record pointing to the NAT Gateway's Elastic IP (EIP)
 resource "aws_route53_record" "main" {
   zone_id = data.aws_route53_zone.main.zone_id
   name    = var.domain_name
