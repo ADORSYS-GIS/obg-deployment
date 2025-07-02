@@ -18,3 +18,8 @@ variable "certificate_domain_validation_options" {
   }))
   default = []
 }
+
+variable "zone_id" {
+  description = "Route53 hosted zone ID"
+  type        = string
+}

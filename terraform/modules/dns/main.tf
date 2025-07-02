@@ -4,26 +4,26 @@ data "aws_route53_zone" "main" {
 
 # Wildcard DNS record pointing to the NAT Gateway's Elastic IP (EIP)
 resource "aws_route53_record" "wildcard" {
-  zone_id = data.aws_route53_zone.main.zone_id
+  zone_id = var.zone_id
   name    = "*.${var.domain_name}"
   type    = "A"
 
   alias {
     name                   = var.target_domain_name
-    zone_id                = data.aws_route53_zone.main.zone_id
+    zone_id                = var.zone_id
     evaluate_target_health = false
   }
 }
 
 # Main domain record pointing to the NAT Gateway's Elastic IP (EIP)
 resource "aws_route53_record" "main" {
-  zone_id = data.aws_route53_zone.main.zone_id
+  zone_id = var.zone_id
   name    = var.domain_name
   type    = "A"
 
   alias {
     name                   = var.target_domain_name
-    zone_id                = data.aws_route53_zone.main.zone_id
+    zone_id                = var.zone_id
     evaluate_target_health = false
   }
 }
@@ -43,5 +43,5 @@ resource "aws_route53_record" "cert_validation" {
   records         = [each.value.record]
   ttl             = 60
   type            = each.value.type
-  zone_id         = data.aws_route53_zone.main.zone_id
+  zone_id         = var.zone_id
 }
