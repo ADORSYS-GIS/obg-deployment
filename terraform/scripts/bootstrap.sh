@@ -10,7 +10,7 @@ apt-get install -y docker.io
 systemctl enable docker
 systemctl start docker
 
-# Add ubuntu user to docker group for non-sudo access
+# Add ubuntu user to docker group for non-sudo access but we can also avoid this so that you always use sudo, making sure that you can't delete something by mistake
 usermod -aG docker ubuntu
 
 # Install Docker Compose v2
@@ -20,29 +20,11 @@ chmod +x /usr/local/bin/docker-compose
 # Install Git
 apt-get install -y git
 
-# Install AWS CLI for SSM access
+# Install AWS CLI for SSM access (optional, can be removed if not needed)
 apt-get install -y awscli
 
-# Authenticate with GitHub Container Registry (GHCR)
-# Option 1: Using SSM Parameter Store (recommended for production)
-if aws ssm get-parameter --name "/obgdeb/ghcr/token" --with-decryption --region eu-north-1 > /dev/null 2>&1; then
-    echo "Authenticating with GitHub Container Registry..."
-    GHCR_TOKEN=$(aws ssm get-parameter --name "/obgdeb/ghcr/token" --with-decryption --region eu-north-1 --query 'Parameter.Value' --output text)
-    echo $GHCR_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
-    echo "Successfully authenticated with GHCR"
-else
-    echo "Warning: GHCR token not found in SSM Parameter Store"
-    echo "If you have private images, authentication will be required manually"
-fi
-
-# Option 2: Using environment variable (alternative)
-# if [ ! -z "$GHCR_TOKEN" ]; then
-#     echo "Authenticating with GitHub Container Registry using environment variable..."
-#     echo $GHCR_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
-# fi
-
 # Clone your Docker Compose deployment
-cd /home/ubuntu
+cd $HOME
 git clone https://github.com/kouamschekina/obg-deployment.git
 cd obg-deployment
 

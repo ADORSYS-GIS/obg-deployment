@@ -66,35 +66,6 @@ output = json
 7. **Route53 DNS Records** (wildcard and main domain)
 8. **CloudWatch Monitoring** with alarms
 
-## GitHub Container Registry Setup
-
-### 1. Create GitHub Personal Access Token
-1. Go to **GitHub Settings** → **Developer settings** → **Personal access tokens** → **Tokens (classic)**
-2. Click **Generate new token (classic)**
-3. Give it a name like "OBG Deployment"
-4. Select scopes:
-   - ✅ `read:packages` (to pull private images)
-   - ✅ `repo` (if images are in private repositories)
-5. Click **Generate token**
-6. **Copy the token** (you won't see it again!)
-
-### 2. Store Token in AWS SSM Parameter Store
-```bash
-# Make the setup script executable
-chmod +x terraform/scripts/setup-ghcr-token.sh
-
-# Store your GitHub token securely
-./terraform/scripts/setup-ghcr-token.sh YOUR_GITHUB_TOKEN_HERE
-```
-
-### 3. Verify Token Storage
-```bash
-# Check if the parameter was stored correctly
-aws ssm describe-parameters \
-  --parameter-filters "Key=Name,Values=/obgdeb/ghcr/token" \
-  --region eu-north-1
-```
-
 ## Deployment Steps
 
 ### 1. Initialize Terraform
@@ -219,25 +190,10 @@ nslookup obgdeb.com
 dig *.obgdeb.com
 ```
 
-#### 4. Docker Images Fail to Pull (GHCR Authentication)
+#### 4. Docker Images Fail to Pull
 ```bash
-# Check if GHCR token is stored in SSM
-aws ssm get-parameter --name "/obgdeb/ghcr/token" --with-decryption --region eu-north-1
-
-# Test GHCR authentication manually on EC2
-aws ssm start-session --target <instance-id>
-docker login ghcr.io -u USERNAME -p YOUR_TOKEN
-
-# Check Docker Compose logs for authentication errors
+# Check Docker Compose logs for errors
 docker-compose logs
-```
-```bash
-# Check Route53 records
-aws route53 list-resource-record-sets --hosted-zone-id <zone-id>
-
-# Test DNS resolution
-nslookup obgdeb.com
-dig *.obgdeb.com
 ```
 
 ## Cleanup
