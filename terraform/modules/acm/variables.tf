@@ -1,31 +1,16 @@
-variable "vpc_name" {
-  description = "Name of the VPC"
+variable "domain_name" {
+  description = "Primary domain name for the certificate"
   type        = string
 }
 
-variable "vpc_cidr" {
-  description = "CIDR block for the VPC"
-  type        = string
-  default     = "10.0.0.0/16"
-}
-
-variable "azs" {
-  description = "List of availability zones to use"
+variable "subject_alternative_names" {
+  description = "List of subject alternative names for the certificate"
   type        = list(string)
-}
-
-variable "private_subnets" {
-  description = "List of private subnet CIDRs"
-  type        = list(string)
-}
-
-variable "public_subnets" {
-  description = "List of public subnet CIDRs"
-  type        = list(string)
+  default     = []
 }
 
 variable "tags" {
-  description = "Tags to apply to resources"
+  description = "Tags to apply to the ACM certificate"
   type        = map(string)
   default     = {}
 }

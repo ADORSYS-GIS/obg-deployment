@@ -1,24 +1,14 @@
-output "vpc_id" {
-  description = "The ID of the VPC"
-  value       = module.vpc.vpc_id
+output "certificate_arn" {
+  description = "ARN of the ACM certificate"
+  value       = module.acm.acm_certificate_arn
 }
 
-output "private_subnets" {
-  description = "List of private subnet IDs"
-  value       = module.vpc.private_subnets
+output "certificate_validation_arns" {
+  description = "ARNs of the certificate validation records"
+  value       = module.acm.acm_certificate_validation_arns
 }
 
-output "public_subnets" {
-  description = "List of public subnet IDs"
-  value       = module.vpc.public_subnets
-}
-
-output "nat_gateway_ids" {
-  description = "List of NAT Gateway IDs"
-  value       = module.vpc.natgw_ids
-}
-
-output "azs" {
-  description = "List of AZs used"
-  value       = module.vpc.azs
+output "certificate_domain_validation_options" {
+  description = "Domain validation options for the certificate"
+  value       = module.acm.acm_certificate_domain_validation_options
 }
