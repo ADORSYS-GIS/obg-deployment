@@ -32,7 +32,6 @@ variable "iam_instance_profile_name" {
 variable "user_data_path" {
   description = "Path to bootstrap.sh"
   type        = string
-  default     = "${path.module}/../../scripts/bootstrap.sh"
 }
 
 variable "tags" {
