@@ -1,19 +1,35 @@
-module "iam" {
-  source  = "terraform-aws-modules/iam/aws"
-  version = "~> 5.0"
+resource "aws_iam_role" "this" {
+  name = var.role_name
 
-  create_role             = true
-  role_name               = var.role_name
-  role_description        = "EC2 instance role for OBG deployment"
-  assume_role_principals  = ["ec2.amazonaws.com"]
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
 
-  custom_role_policy_arns = [
-    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
-    "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
-  ]
+  tags = var.tags
+}
 
-  create_instance_profile = true
-  instance_profile_name   = var.instance_profile_name
+resource "aws_iam_role_policy_attachment" "ssm" {
+  role       = aws_iam_role.this.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy_attachment" "cloudwatch" {
+  role       = aws_iam_role.this.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}
+
+resource "aws_iam_instance_profile" "this" {
+  name = var.instance_profile_name
+  role = aws_iam_role.this.name
 
   tags = var.tags
 }

@@ -1,19 +1,19 @@
 output "role_name" {
   description = "Name of the IAM role"
-  value       = module.iam.iam_role_name
+  value       = aws_iam_role.this.name
 }
 
 output "role_arn" {
   description = "ARN of the IAM role"
-  value       = module.iam.iam_role_arn
+  value       = aws_iam_role.this.arn
 }
 
 output "instance_profile_name" {
   description = "Name of the IAM instance profile"
-  value       = module.iam.iam_instance_profile_name
+  value       = aws_iam_instance_profile.this.name
 }
 
 output "instance_profile_arn" {
   description = "ARN of the IAM instance profile"
-  value       = module.iam.iam_instance_profile_arn
+  value       = aws_iam_instance_profile.this.arn
 } 

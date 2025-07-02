@@ -103,7 +103,7 @@ module "cloudwatch" {
   source = "./modules/cloudwatch"
 
   instance_id   = module.ec2.instance_id
-  instance_name = module.ec2.name
+  instance_name = "obgdeb-app-server"
   alarms = {
     cpu_utilization = {
       name                = "HighCPUUtilization"

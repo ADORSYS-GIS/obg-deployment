@@ -21,7 +21,7 @@ chmod +x /usr/local/bin/docker-compose
 apt-get install -y git
 
 # Install AWS CLI for SSM access (optional, can be removed if not needed)
-apt-get install -y awscli
+# apt-get install -y awscli
 
 # Clone your Docker Compose deployment
 cd $HOME

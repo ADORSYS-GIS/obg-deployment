@@ -3,11 +3,6 @@ output "certificate_arn" {
   value       = module.acm.acm_certificate_arn
 }
 
-output "certificate_validation_arns" {
-  description = "ARNs of the certificate validation records"
-  value       = module.acm.acm_certificate_validation_arns
-}
-
 output "certificate_domain_validation_options" {
   description = "Domain validation options for the certificate"
   value       = module.acm.acm_certificate_domain_validation_options
