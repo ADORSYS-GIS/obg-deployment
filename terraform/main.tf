@@ -94,7 +94,7 @@ module "dns" {
   source = "./modules/dns"
 
   domain_name = "obgdeb.com"
-  target_domain_name = module.vpc.nat_public_ips[0] # NAT Gateway public IP for A record
+  target_domain_name = "16.170.30.251" # TEMP: Hardcoded NAT Gateway EIP
   certificate_domain_validation_options = module.acm.certificate_domain_validation_options
   zone_id = "Z00518373C54T0KEYAIGH"
   depends_on = [module.acm]

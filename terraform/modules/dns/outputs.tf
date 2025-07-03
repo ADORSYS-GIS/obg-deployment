@@ -1,11 +1,6 @@
 output "hosted_zone_id" {
-  description = "ID of the Route53 hosted zone"
-  value       = data.aws_route53_zone.main.zone_id
-}
-
-output "hosted_zone_name_servers" {
-  description = "Name servers of the Route53 hosted zone"
-  value       = data.aws_route53_zone.main.name_servers
+  description = "The ID of the Route53 hosted zone"
+  value       = var.zone_id
 }
 
 output "wildcard_record_name" {

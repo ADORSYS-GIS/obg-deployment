@@ -1,6 +1,6 @@
-data "aws_route53_zone" "main" {
-  name = var.domain_name
-}
+#data "aws_route53_zone" "main" {
+#  name = var.domain_name
+#}
 
 # Wildcard DNS record pointing to the NAT Gateway's Elastic IP (EIP)
 resource "aws_route53_record" "wildcard" {
