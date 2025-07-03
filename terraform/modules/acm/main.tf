@@ -6,7 +6,7 @@ module "acm" {
   subject_alternative_names = var.subject_alternative_names
 
   # DNS validation
-  validate_certificate = true
+  validate_certificate = false
   validation_method   = "DNS"
 
   # Wait for validation to complete
