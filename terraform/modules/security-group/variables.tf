@@ -17,4 +17,28 @@ variable "tags" {
   description = "Tags to apply to the security group"
   type        = map(string)
   default     = {}
+}
+
+variable "ingress_with_cidr_blocks" {
+  description = "List of ingress rules with CIDR blocks"
+  type = list(object({
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    description = string
+    cidr_blocks = list(string)
+  }))
+  default = []
+}
+
+variable "egress_with_cidr_blocks" {
+  description = "List of egress rules with CIDR blocks"
+  type = list(object({
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    description = string
+    cidr_blocks = list(string)
+  }))
+  default = []
 } 

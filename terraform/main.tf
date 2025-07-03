@@ -43,6 +43,9 @@ module "security_group" {
   description = "Security group for OBG application"
   vpc_id      = module.vpc.vpc_id
 
+  ingress_with_cidr_blocks = []
+  egress_with_cidr_blocks  = []
+
   tags = {
     Environment = var.environment
     Terraform   = "true"
@@ -59,6 +62,125 @@ data "aws_ami" "ubuntu" {
   }
 }
 
+module "alb_security_group" {
+  source = "./modules/security-group"
+
+  name        = "obgdeb-alb-sg"
+  description = "Allow HTTP and HTTPS to ALB"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress_with_cidr_blocks = [
+    {
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      description = "HTTP"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      description = "HTTPS"
+      cidr_blocks = "0.0.0.0/0"
+    }
+  ]
+
+  egress_with_cidr_blocks = [
+    {
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      description = "All outbound traffic"
+      cidr_blocks = "0.0.0.0/0"
+    }
+  ]
+
+  tags = {
+    Environment = var.environment
+    Terraform   = "true"
+  }
+}
+
+resource "aws_lb" "app" {
+  name               = "obgdeb-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [module.alb_security_group.security_group_id]
+  subnets            = module.vpc.public_subnets
+
+  tags = {
+    Environment = var.environment
+    Terraform   = "true"
+  }
+}
+
+resource "aws_lb_target_group" "app" {
+  name     = "obgdeb-tg"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = module.vpc.vpc_id
+
+  health_check {
+    path                = "/"
+    protocol            = "HTTP"
+    matcher             = "200-399"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+
+  tags = {
+    Environment = var.environment
+    Terraform   = "true"
+  }
+}
+
+resource "aws_lb_listener" "http" {
+  load_balancer_arn = aws_lb.app.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "redirect"
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
+resource "aws_lb_listener" "https" {
+  load_balancer_arn = aws_lb.app.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = module.acm.certificate_arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app.arn
+  }
+}
+
+resource "aws_lb_target_group_attachment" "app" {
+  target_group_arn = aws_lb_target_group.app.arn
+  target_id        = module.ec2.instance_id
+  port             = 80
+}
+
+resource "aws_security_group_rule" "allow_alb_to_ec2" {
+  type                     = "ingress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  security_group_id        = module.security_group.security_group_id
+  source_security_group_id = module.alb_security_group.security_group_id
+  description              = "Allow ALB to reach EC2"
+}
+
 module "ec2" {
   source = "./modules/ec2"
 
@@ -69,6 +191,7 @@ module "ec2" {
   security_group_id       = module.security_group.security_group_id
   iam_instance_profile_name = module.iam.instance_profile_name
   user_data_path          = "${path.module}/scripts/bootstrap.sh"
+  associate_public_ip_address = false
 
   tags = {
     Environment = var.environment
@@ -94,7 +217,7 @@ module "dns" {
   source = "./modules/dns"
 
   domain_name = "obgdeb.com"
-  target_domain_name = "16.170.30.251" # TEMP: Hardcoded NAT Gateway EIP
+  target_domain_name = aws_lb.app.dns_name
   certificate_domain_validation_options = module.acm.certificate_domain_validation_options
   zone_id = "Z00518373C54T0KEYAIGH"
   depends_on = [module.acm]

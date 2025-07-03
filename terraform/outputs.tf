@@ -42,3 +42,18 @@ output "iam_instance_profile_name" {
   description = "Name of the IAM instance profile"
   value       = module.iam.instance_profile_name
 }
+
+output "alb_dns_name" {
+  description = "DNS name of the Application Load Balancer"
+  value       = aws_lb.app.dns_name
+}
+
+output "alb_arn" {
+  description = "ARN of the Application Load Balancer"
+  value       = aws_lb.app.arn
+}
+
+output "acm_certificate_arn" {
+  description = "ARN of the ACM certificate used for HTTPS"
+  value       = module.acm.certificate_arn
+}
