@@ -9,9 +9,9 @@ module "vpc" {
 
   vpc_name         = "obgdeb-vpc-2025"
   vpc_cidr         = "10.0.0.0/16"
-  azs              = ["eu-north-1a"]
-  private_subnets  = ["10.0.1.0/24"]
-  public_subnets   = ["10.0.101.0/24"]
+  azs              = ["eu-north-1a", "eu-north-1b"]
+  private_subnets  = ["10.0.1.0/24", "10.0.2.0/24"]
+  public_subnets   = ["10.0.101.0/24", "10.0.102.0/24"]
 
   enable_nat_gateway   = true
   single_nat_gateway   = true
@@ -218,6 +218,7 @@ module "dns" {
 
   domain_name = "obgdeb.com"
   target_domain_name = aws_lb.app.dns_name
+  target_zone_id = aws_lb.app.zone_id
   certificate_domain_validation_options = module.acm.certificate_domain_validation_options
   zone_id = "Z00518373C54T0KEYAIGH"
   depends_on = [module.acm]

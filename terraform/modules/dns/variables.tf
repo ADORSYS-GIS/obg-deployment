@@ -23,3 +23,8 @@ variable "zone_id" {
   description = "Route53 hosted zone ID"
   type        = string
 }
+
+variable "target_zone_id" {
+  description = "Zone ID of the ALB for Route53 alias record."
+  type        = string
+}

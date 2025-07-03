@@ -7,8 +7,12 @@ resource "aws_route53_record" "wildcard" {
   zone_id = var.zone_id
   name    = "*.${var.domain_name}"
   type    = "A"
-  records = [var.target_domain_name]
-  ttl     = 300
+
+  alias {
+    name                   = var.target_domain_name
+    zone_id                = var.target_zone_id
+    evaluate_target_health = true
+  }
 }
 
 # Main domain record pointing to the NAT Gateway's Elastic IP (EIP)
@@ -16,8 +20,12 @@ resource "aws_route53_record" "main" {
   zone_id = var.zone_id
   name    = var.domain_name
   type    = "A"
-  records = [var.target_domain_name]
-  ttl     = 300
+
+  alias {
+    name                   = var.target_domain_name
+    zone_id                = var.target_zone_id
+    evaluate_target_health = true
+  }
 }
 
 # ACM certificate validation records
