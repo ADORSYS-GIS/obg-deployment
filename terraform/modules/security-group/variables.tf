@@ -26,7 +26,7 @@ variable "ingress_with_cidr_blocks" {
     to_port     = number
     protocol    = string
     description = string
-    cidr_blocks = list(string)
+    cidr_blocks = string
   }))
   default = []
 }
@@ -38,7 +38,7 @@ variable "egress_with_cidr_blocks" {
     to_port     = number
     protocol    = string
     description = string
-    cidr_blocks = list(string)
+    cidr_blocks = string
   }))
   default = []
 } 

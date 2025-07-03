@@ -1,0 +1,777 @@
+module.iam.data.aws_caller_identity.current: Reading...
+data.aws_ami.ubuntu: Reading...
+module.iam.data.aws_caller_identity.current: Read complete after 0s [id=686255958454]
+data.aws_ami.ubuntu: Read complete after 1s [id=ami-03b371d239dfe4af4]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+ <= read (data resources)
+
+Terraform planned the following actions, but then encountered a problem:
+
+  # module.cloudwatch.aws_cloudwatch_log_group.application will be created
+  + resource "aws_cloudwatch_log_group" "application" {
+      + arn               = (known after apply)
+      + id                = (known after apply)
+      + log_group_class   = (known after apply)
+      + name              = "/aws/ec2/obgdeb-app-server"
+      + name_prefix       = (known after apply)
+      + retention_in_days = 14
+      + skip_destroy      = false
+      + tags              = {
+          + "Environment" = "dev"
+          + "Terraform"   = "true"
+        }
+      + tags_all          = {
+          + "Environment" = "dev"
+          + "Terraform"   = "true"
+        }
+    }
+
+  # module.cloudwatch.aws_ssm_parameter.cloudwatch_agent_config will be created
+  + resource "aws_ssm_parameter" "cloudwatch_agent_config" {
+      + arn            = (known after apply)
+      + data_type      = (known after apply)
+      + has_value_wo   = (known after apply)
+      + id             = (known after apply)
+      + insecure_value = (known after apply)
+      + key_id         = (known after apply)
+      + name           = "/cloudwatch-agent/config"
+      + tags           = {
+          + "Environment" = "dev"
+          + "Terraform"   = "true"
+        }
+      + tags_all       = {
+          + "Environment" = "dev"
+          + "Terraform"   = "true"
+        }
+      + tier           = (known after apply)
+      + type           = "String"
+      + value          = (sensitive value)
+      + value_wo       = (write-only attribute)
+      + version        = (known after apply)
+    }
+
+  # module.eip.aws_eip.this will be created
+  + resource "aws_eip" "this" {
+      + allocation_id        = (known after apply)
+      + arn                  = (known after apply)
+      + association_id       = (known after apply)
+      + carrier_ip           = (known after apply)
+      + customer_owned_ip    = (known after apply)
+      + domain               = "vpc"
+      + id                   = (known after apply)
+      + instance             = (known after apply)
+      + ipam_pool_id         = (known after apply)
+      + network_border_group = (known after apply)
+      + network_interface    = (known after apply)
+      + private_dns          = (known after apply)
+      + private_ip           = (known after apply)
+      + ptr_record           = (known after apply)
+      + public_dns           = (known after apply)
+      + public_ip            = (known after apply)
+      + public_ipv4_pool     = (known after apply)
+      + tags                 = {
+          + "Environment" = "dev"
+          + "Name"        = "nat-eip"
+        }
+      + tags_all             = {
+          + "Environment" = "dev"
+          + "Name"        = "nat-eip"
+        }
+      + vpc                  = (known after apply)
+    }
+
+  # module.iam.aws_iam_instance_profile.this will be created
+  + resource "aws_iam_instance_profile" "this" {
+      + arn         = (known after apply)
+      + create_date = (known after apply)
+      + id          = (known after apply)
+      + name        = "obgdeb-ec2-profile"
+      + name_prefix = (known after apply)
+      + path        = "/"
+      + role        = "obgdeb-ec2-role"
+      + tags        = {
+          + "Environment" = "dev"
+          + "Terraform"   = "true"
+        }
+      + tags_all    = {
+          + "Environment" = "dev"
+          + "Terraform"   = "true"
+        }
+      + unique_id   = (known after apply)
+    }
+
+  # module.iam.aws_iam_role.this will be created
+  + resource "aws_iam_role" "this" {
+      + arn                   = (known after apply)
+      + assume_role_policy    = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action    = "sts:AssumeRole"
+                      + Effect    = "Allow"
+                      + Principal = {
+                          + Service = "ec2.amazonaws.com"
+                        }
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + create_date           = (known after apply)
+      + force_detach_policies = false
+      + id                    = (known after apply)
+      + managed_policy_arns   = (known after apply)
+      + max_session_duration  = 3600
+      + name                  = "obgdeb-ec2-role"
+      + name_prefix           = (known after apply)
+      + path                  = "/"
+      + tags                  = {
+          + "Environment" = "dev"
+          + "Terraform"   = "true"
+        }
+      + tags_all              = {
+          + "Environment" = "dev"
+          + "Terraform"   = "true"
+        }
+      + unique_id             = (known after apply)
+
+      + inline_policy (known after apply)
+    }
+
+  # module.iam.aws_iam_role_policy_attachment.cloudwatch will be created
+  + resource "aws_iam_role_policy_attachment" "cloudwatch" {
+      + id         = (known after apply)
+      + policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+      + role       = "obgdeb-ec2-role"
+    }
+
+  # module.iam.aws_iam_role_policy_attachment.ssm will be created
+  + resource "aws_iam_role_policy_attachment" "ssm" {
+      + id         = (known after apply)
+      + policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+      + role       = "obgdeb-ec2-role"
+    }
+
+  # module.acm.module.acm.aws_acm_certificate.this[0] will be created
+  + resource "aws_acm_certificate" "this" {
+      + arn                       = (known after apply)
+      + domain_name               = "obgdeb.com"
+      + domain_validation_options = [
+          + {
+              + domain_name           = "*.obgdeb.com"
+              + resource_record_name  = (known after apply)
+              + resource_record_type  = (known after apply)
+              + resource_record_value = (known after apply)
+            },
+          + {
+              + domain_name           = "obgdeb.com"
+              + resource_record_name  = (known after apply)
+              + resource_record_type  = (known after apply)
+              + resource_record_value = (known after apply)
+            },
+        ]
+      + id                        = (known after apply)
+      + key_algorithm             = (known after apply)
+      + not_after                 = (known after apply)
+      + not_before                = (known after apply)
+      + pending_renewal           = (known after apply)
+      + renewal_eligibility       = (known after apply)
+      + renewal_summary           = (known after apply)
+      + status                    = (known after apply)
+      + subject_alternative_names = [
+          + "*.obgdeb.com",
+          + "obgdeb.com",
+        ]
+      + tags                      = {
+          + "Environment" = "dev"
+          + "Terraform"   = "true"
+        }
+      + tags_all                  = {
+          + "Environment" = "dev"
+          + "Terraform"   = "true"
+        }
+      + type                      = (known after apply)
+      + validation_emails         = (known after apply)
+      + validation_method         = "DNS"
+
+      + options {
+          + certificate_transparency_logging_preference = "ENABLED"
+        }
+    }
+
+  # module.cloudwatch.module.cloudwatch_alarms["cpu_utilization"].aws_cloudwatch_metric_alarm.this[0] will be created
+  + resource "aws_cloudwatch_metric_alarm" "this" {
+      + actions_enabled                       = true
+      + alarm_description                     = "Alarm when CPU exceeds 80%"
+      + alarm_name                            = "HighCPUUtilization"
+      + arn                                   = (known after apply)
+      + comparison_operator                   = "GreaterThanThreshold"
+      + dimensions                            = (known after apply)
+      + evaluate_low_sample_count_percentiles = (known after apply)
+      + evaluation_periods                    = 2
+      + id                                    = (known after apply)
+      + metric_name                           = "CPUUtilization"
+      + namespace                             = "AWS/EC2"
+      + period                                = 300
+      + statistic                             = "Average"
+      + tags                                  = {
+          + "Environment" = "dev"
+          + "Terraform"   = "true"
+        }
+      + tags_all                              = {
+          + "Environment" = "dev"
+          + "Terraform"   = "true"
+        }
+      + threshold                             = 80
+      + treat_missing_data                    = "missing"
+    }
+
+  # module.ec2.module.ec2_instance.data.aws_partition.current will be read during apply
+  # (depends on a resource or a module with changes pending)
+ <= data "aws_partition" "current" {
+      + dns_suffix         = (known after apply)
+      + id                 = (known after apply)
+      + partition          = (known after apply)
+      + reverse_dns_prefix = (known after apply)
+    }
+
+  # module.ec2.module.ec2_instance.aws_instance.this[0] will be created
+  + resource "aws_instance" "this" {
+      + ami                                  = "ami-03b371d239dfe4af4"
+      + arn                                  = (known after apply)
+      + associate_public_ip_address          = false
+      + availability_zone                    = (known after apply)
+      + cpu_core_count                       = (known after apply)
+      + cpu_threads_per_core                 = (known after apply)
+      + disable_api_stop                     = (known after apply)
+      + disable_api_termination              = (known after apply)
+      + ebs_optimized                        = true
+      + enable_primary_ipv6                  = (known after apply)
+      + get_password_data                    = false
+      + host_id                              = (known after apply)
+      + host_resource_group_arn              = (known after apply)
+      + iam_instance_profile                 = "obgdeb-ec2-profile"
+      + id                                   = (known after apply)
+      + instance_initiated_shutdown_behavior = (known after apply)
+      + instance_lifecycle                   = (known after apply)
+      + instance_state                       = (known after apply)
+      + instance_type                        = "t3.large"
+      + ipv6_address_count                   = (known after apply)
+      + ipv6_addresses                       = (known after apply)
+      + key_name                             = (known after apply)
+      + monitoring                           = true
+      + outpost_arn                          = (known after apply)
+      + password_data                        = (known after apply)
+      + placement_group                      = (known after apply)
+      + placement_partition_number           = (known after apply)
+      + primary_network_interface_id         = (known after apply)
+      + private_dns                          = (known after apply)
+      + private_ip                           = (known after apply)
+      + public_dns                           = (known after apply)
+      + public_ip                            = (known after apply)
+      + secondary_private_ips                = (known after apply)
+      + security_groups                      = (known after apply)
+      + source_dest_check                    = true
+      + spot_instance_request_id             = (known after apply)
+      + subnet_id                            = (known after apply)
+      + tags                                 = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-app-server"
+          + "Terraform"   = "true"
+        }
+      + tags_all                             = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-app-server"
+          + "Terraform"   = "true"
+        }
+      + tenancy                              = (known after apply)
+      + user_data                            = "fee1a6869bf8eb59c575617d75cd164d16635ac7"
+      + user_data_base64                     = (known after apply)
+      + user_data_replace_on_change          = false
+      + volume_tags                          = {
+          + "Name" = "obgdeb-app-server"
+        }
+      + vpc_security_group_ids               = (known after apply)
+
+      + capacity_reservation_specification (known after apply)
+
+      + cpu_options (known after apply)
+
+      + credit_specification {}
+
+      + ebs_block_device (known after apply)
+
+      + enclave_options {
+          + enabled = (known after apply)
+        }
+
+      + ephemeral_block_device (known after apply)
+
+      + instance_market_options (known after apply)
+
+      + maintenance_options (known after apply)
+
+      + metadata_options {
+          + http_endpoint               = "enabled"
+          + http_protocol_ipv6          = "disabled"
+          + http_put_response_hop_limit = 1
+          + http_tokens                 = "required"
+          + instance_metadata_tags      = (known after apply)
+        }
+
+      + network_interface (known after apply)
+
+      + private_dns_name_options (known after apply)
+
+      + root_block_device (known after apply)
+
+      + timeouts {}
+    }
+
+  # module.security_group.module.security_group.aws_security_group.this_name_prefix[0] will be created
+  + resource "aws_security_group" "this_name_prefix" {
+      + arn                    = (known after apply)
+      + description            = "Security group for OBG application"
+      + egress                 = (known after apply)
+      + id                     = (known after apply)
+      + ingress                = (known after apply)
+      + name                   = (known after apply)
+      + name_prefix            = "obgdeb-app-sg-"
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-app-sg"
+          + "Terraform"   = "true"
+        }
+      + tags_all               = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-app-sg"
+          + "Terraform"   = "true"
+        }
+      + vpc_id                 = (known after apply)
+
+      + timeouts {
+          + create = "10m"
+          + delete = "15m"
+        }
+    }
+
+  # module.security_group.module.security_group.aws_security_group_rule.egress_with_cidr_blocks[0] will be created
+  + resource "aws_security_group_rule" "egress_with_cidr_blocks" {
+      + cidr_blocks              = [
+          + "0.0.0.0/0",
+        ]
+      + description              = "All outbound traffic"
+      + from_port                = 0
+      + id                       = (known after apply)
+      + protocol                 = "-1"
+      + security_group_id        = (known after apply)
+      + security_group_rule_id   = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 0
+      + type                     = "egress"
+    }
+
+  # module.security_group.module.security_group.aws_security_group_rule.ingress_with_cidr_blocks[0] will be created
+  + resource "aws_security_group_rule" "ingress_with_cidr_blocks" {
+      + cidr_blocks              = [
+          + "0.0.0.0/0",
+        ]
+      + description              = "HTTP"
+      + from_port                = 80
+      + id                       = (known after apply)
+      + protocol                 = "tcp"
+      + security_group_id        = (known after apply)
+      + security_group_rule_id   = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 80
+      + type                     = "ingress"
+    }
+
+  # module.security_group.module.security_group.aws_security_group_rule.ingress_with_cidr_blocks[1] will be created
+  + resource "aws_security_group_rule" "ingress_with_cidr_blocks" {
+      + cidr_blocks              = [
+          + "0.0.0.0/0",
+        ]
+      + description              = "HTTPS"
+      + from_port                = 443
+      + id                       = (known after apply)
+      + protocol                 = "tcp"
+      + security_group_id        = (known after apply)
+      + security_group_rule_id   = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 443
+      + type                     = "ingress"
+    }
+
+  # module.security_group.module.security_group.aws_security_group_rule.ingress_with_source_security_group_id[0] will be created
+  + resource "aws_security_group_rule" "ingress_with_source_security_group_id" {
+      + description              = "Internal container communication"
+      + from_port                = 8080
+      + id                       = (known after apply)
+      + prefix_list_ids          = []
+      + protocol                 = "tcp"
+      + security_group_id        = (known after apply)
+      + security_group_rule_id   = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 9000
+      + type                     = "ingress"
+    }
+
+  # module.vpc.module.vpc.aws_default_network_acl.this[0] will be created
+  + resource "aws_default_network_acl" "this" {
+      + arn                    = (known after apply)
+      + default_network_acl_id = (known after apply)
+      + id                     = (known after apply)
+      + owner_id               = (known after apply)
+      + tags                   = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025-default"
+          + "Terraform"   = "true"
+        }
+      + tags_all               = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025-default"
+          + "Terraform"   = "true"
+        }
+      + vpc_id                 = (known after apply)
+
+      + egress {
+          + action          = "allow"
+          + from_port       = 0
+          + ipv6_cidr_block = "::/0"
+          + protocol        = "-1"
+          + rule_no         = 101
+          + to_port         = 0
+            # (1 unchanged attribute hidden)
+        }
+      + egress {
+          + action          = "allow"
+          + cidr_block      = "0.0.0.0/0"
+          + from_port       = 0
+          + protocol        = "-1"
+          + rule_no         = 100
+          + to_port         = 0
+            # (1 unchanged attribute hidden)
+        }
+
+      + ingress {
+          + action          = "allow"
+          + from_port       = 0
+          + ipv6_cidr_block = "::/0"
+          + protocol        = "-1"
+          + rule_no         = 101
+          + to_port         = 0
+            # (1 unchanged attribute hidden)
+        }
+      + ingress {
+          + action          = "allow"
+          + cidr_block      = "0.0.0.0/0"
+          + from_port       = 0
+          + protocol        = "-1"
+          + rule_no         = 100
+          + to_port         = 0
+            # (1 unchanged attribute hidden)
+        }
+    }
+
+  # module.vpc.module.vpc.aws_default_route_table.default[0] will be created
+  + resource "aws_default_route_table" "default" {
+      + arn                    = (known after apply)
+      + default_route_table_id = (known after apply)
+      + id                     = (known after apply)
+      + owner_id               = (known after apply)
+      + route                  = (known after apply)
+      + tags                   = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025-default"
+          + "Terraform"   = "true"
+        }
+      + tags_all               = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025-default"
+          + "Terraform"   = "true"
+        }
+      + vpc_id                 = (known after apply)
+
+      + timeouts {
+          + create = "5m"
+          + update = "5m"
+        }
+    }
+
+  # module.vpc.module.vpc.aws_default_security_group.this[0] will be created
+  + resource "aws_default_security_group" "this" {
+      + arn                    = (known after apply)
+      + description            = (known after apply)
+      + egress                 = (known after apply)
+      + id                     = (known after apply)
+      + ingress                = (known after apply)
+      + name                   = (known after apply)
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025-default"
+          + "Terraform"   = "true"
+        }
+      + tags_all               = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025-default"
+          + "Terraform"   = "true"
+        }
+      + vpc_id                 = (known after apply)
+    }
+
+  # module.vpc.module.vpc.aws_internet_gateway.this[0] will be created
+  + resource "aws_internet_gateway" "this" {
+      + arn      = (known after apply)
+      + id       = (known after apply)
+      + owner_id = (known after apply)
+      + tags     = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025"
+          + "Terraform"   = "true"
+        }
+      + tags_all = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025"
+          + "Terraform"   = "true"
+        }
+      + vpc_id   = (known after apply)
+    }
+
+  # module.vpc.module.vpc.aws_nat_gateway.this[0] will be created
+  + resource "aws_nat_gateway" "this" {
+      + allocation_id                      = (known after apply)
+      + association_id                     = (known after apply)
+      + connectivity_type                  = "public"
+      + id                                 = (known after apply)
+      + network_interface_id               = (known after apply)
+      + private_ip                         = (known after apply)
+      + public_ip                          = (known after apply)
+      + secondary_private_ip_address_count = (known after apply)
+      + secondary_private_ip_addresses     = (known after apply)
+      + subnet_id                          = (known after apply)
+      + tags                               = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025-eu-north-1a"
+          + "Terraform"   = "true"
+        }
+      + tags_all                           = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025-eu-north-1a"
+          + "Terraform"   = "true"
+        }
+    }
+
+  # module.vpc.module.vpc.aws_route.private_nat_gateway[0] will be created
+  + resource "aws_route" "private_nat_gateway" {
+      + destination_cidr_block = "0.0.0.0/0"
+      + id                     = (known after apply)
+      + instance_id            = (known after apply)
+      + instance_owner_id      = (known after apply)
+      + nat_gateway_id         = (known after apply)
+      + network_interface_id   = (known after apply)
+      + origin                 = (known after apply)
+      + route_table_id         = (known after apply)
+      + state                  = (known after apply)
+
+      + timeouts {
+          + create = "5m"
+        }
+    }
+
+  # module.vpc.module.vpc.aws_route.public_internet_gateway[0] will be created
+  + resource "aws_route" "public_internet_gateway" {
+      + destination_cidr_block = "0.0.0.0/0"
+      + gateway_id             = (known after apply)
+      + id                     = (known after apply)
+      + instance_id            = (known after apply)
+      + instance_owner_id      = (known after apply)
+      + network_interface_id   = (known after apply)
+      + origin                 = (known after apply)
+      + route_table_id         = (known after apply)
+      + state                  = (known after apply)
+
+      + timeouts {
+          + create = "5m"
+        }
+    }
+
+  # module.vpc.module.vpc.aws_route_table.private[0] will be created
+  + resource "aws_route_table" "private" {
+      + arn              = (known after apply)
+      + id               = (known after apply)
+      + owner_id         = (known after apply)
+      + propagating_vgws = (known after apply)
+      + route            = (known after apply)
+      + tags             = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025-private"
+          + "Terraform"   = "true"
+        }
+      + tags_all         = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025-private"
+          + "Terraform"   = "true"
+        }
+      + vpc_id           = (known after apply)
+    }
+
+  # module.vpc.module.vpc.aws_route_table.public[0] will be created
+  + resource "aws_route_table" "public" {
+      + arn              = (known after apply)
+      + id               = (known after apply)
+      + owner_id         = (known after apply)
+      + propagating_vgws = (known after apply)
+      + route            = (known after apply)
+      + tags             = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025-public"
+          + "Terraform"   = "true"
+        }
+      + tags_all         = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025-public"
+          + "Terraform"   = "true"
+        }
+      + vpc_id           = (known after apply)
+    }
+
+  # module.vpc.module.vpc.aws_route_table_association.private[0] will be created
+  + resource "aws_route_table_association" "private" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # module.vpc.module.vpc.aws_route_table_association.public[0] will be created
+  + resource "aws_route_table_association" "public" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # module.vpc.module.vpc.aws_subnet.private[0] will be created
+  + resource "aws_subnet" "private" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "eu-north-1a"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.1.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = false
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025-private-eu-north-1a"
+          + "Terraform"   = "true"
+        }
+      + tags_all                                       = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025-private-eu-north-1a"
+          + "Terraform"   = "true"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # module.vpc.module.vpc.aws_subnet.public[0] will be created
+  + resource "aws_subnet" "public" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "eu-north-1a"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.101.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = false
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025-public-eu-north-1a"
+          + "Terraform"   = "true"
+        }
+      + tags_all                                       = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025-public-eu-north-1a"
+          + "Terraform"   = "true"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # module.vpc.module.vpc.aws_vpc.this[0] will be created
+  + resource "aws_vpc" "this" {
+      + arn                                  = (known after apply)
+      + cidr_block                           = "10.0.0.0/16"
+      + default_network_acl_id               = (known after apply)
+      + default_route_table_id               = (known after apply)
+      + default_security_group_id            = (known after apply)
+      + dhcp_options_id                      = (known after apply)
+      + enable_dns_hostnames                 = true
+      + enable_dns_support                   = true
+      + enable_network_address_usage_metrics = (known after apply)
+      + id                                   = (known after apply)
+      + instance_tenancy                     = "default"
+      + ipv6_association_id                  = (known after apply)
+      + ipv6_cidr_block                      = (known after apply)
+      + ipv6_cidr_block_network_border_group = (known after apply)
+      + main_route_table_id                  = (known after apply)
+      + owner_id                             = (known after apply)
+      + tags                                 = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025"
+          + "Terraform"   = "true"
+        }
+      + tags_all                             = {
+          + "Environment" = "dev"
+          + "Name"        = "obgdeb-vpc-2025"
+          + "Terraform"   = "true"
+        }
+    }
+
+Plan: 29 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + ec2_instance_id           = (known after apply)
+  + ec2_private_ip            = (known after apply)
+  + iam_instance_profile_name = "obgdeb-ec2-profile"
+  + iam_role_name             = "obgdeb-ec2-role"
+  + nat_gateway_ips           = []
+  + private_subnets           = [
+      + (known after apply),
+    ]
+  + public_subnets            = [
+      + (known after apply),
+    ]
+  + security_group_id         = (known after apply)
+  + vpc_id                    = (known after apply)
+╷
+│ Error: zone_id must not be empty, got 
+│ 
+│   with module.acm.module.acm.aws_route53_record.validation[0],
+│   on .terraform/modules/acm.acm/main.tf line 50, in resource "aws_route53_record" "validation":
+│   50:   zone_id = var.zone_id
+│ 
+╵
+➜  terraform git:(main) ✗ 
