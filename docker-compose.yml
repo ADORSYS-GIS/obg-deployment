@@ -10,10 +10,8 @@ services:
     command:
       - "--providers.docker=true"
       - "--entrypoints.web.address=:80"
-      #- "--entrypoints.websecure.address=:443"
     ports:
       - "80:80"           # Traefik HTTP
-      #- "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     labels:
@@ -38,15 +36,15 @@ services:
 
   open-banking-gateway:
     environment:
-      - SPRING_LIQUIBASE_PARAMETERS_ADORSYS-SANDBOX-URL=https://obg-bank-dev-xs2a.cloud.adorsys.de
+      - SPRING_LIQUIBASE_PARAMETERS_ADORSYS-SANDBOX-URL=https://xs2a-connector-modelbank.support.sol.adorsys.com
       - SPRING_LIQUIBASE_PARAMETERS_ADORSYS-HBCI-SANDBOX-URL=http://hbci-sandbox:8090/hbci-mock/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/open_banking?currentSchema=banking_protocol
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=docker
       - PROTOCOL_XS2A_PKCS12_KEYSTORE=/pkcs12/sample-qwac.keystore
       - FACADE_ENCRYPTION_KEYSETPATH=/keysetpath/example-keyset.json
-      - FACADE_URLS_EMBEDDED-UI-BASE-URL=http://localhost:14200
-      - PROTOCOL_GATEWAY-BASE-URL=http://localhost:18085
+      - FACADE_URLS_EMBEDDED-UI-BASE-URL=https://consent.obgdeb.com
+      - PROTOCOL_GATEWAY-BASE-URL=https://obg.obgdeb.com
     image: ghcr.io/adorsys/open-banking-gateway:latest-develop
     labels:
       - "traefik.enable=true"
@@ -64,7 +62,7 @@ services:
   fintech-ui:
     environment:
       - APP_TYPE=fintech
-      - BACKEND_URL=http://fintech-server:8086
+      - BACKEND_URL=https://fintech-server.obgdeb.com
     entrypoint: [ "/entry.sh" ]
     restart: on-failure
     image: ghcr.io/adorsys/fintech-ui:16d7941-develop
@@ -84,9 +82,9 @@ services:
 
   fintech-server:
     environment:
-      - TPP_URL=http://open-banking-gateway:8085
+      - TPP_URL=https://obg.obgdeb.com
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/open_banking?currentSchema=fintech
-      - FINTECH-UI_HOST=http://localhost:24200
+      - FINTECH-UI_HOST=https://fintech-ui.obgdeb.com
     image: ghcr.io/adorsys/fintech-server:latest-develop
     labels:
       - "traefik.enable=true"
@@ -100,7 +98,7 @@ services:
 
   consent-ui:
     environment:
-      - BACKEND_URL=http://open-banking-gateway:8085
+      - BACKEND_URL=https://obg.obgdeb.com
       - APP_TYPE=consent
     restart: on-failure
     image: ghcr.io/adorsys/consent-ui:60033fc-develop

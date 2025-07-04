@@ -1,11 +1,6 @@
 #!/bin/bash
 set -eux
 
-# Install and start SSM Agent (for Ubuntu)
-sudo snap install amazon-ssm-agent --classic || sudo apt-get install -y amazon-ssm-agent
-sudo systemctl enable amazon-ssm-agent
-sudo systemctl restart amazon-ssm-agent
-
 # Update system
 sudo apt-get update -y
 sudo apt-get upgrade -y

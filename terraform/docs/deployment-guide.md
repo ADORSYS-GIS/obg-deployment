@@ -74,17 +74,25 @@ cd terraform
 terraform init
 ```
 
-### 2. Review the Plan
+### 2. Provision Core Infrastructure (VPC, EIP, ACM Certificate)
+Before running a full plan/apply, provision the VPC, EIP, and ACM certificate first. This ensures that DNS and certificate validation can complete before dependent resources are created.
+
+```bash
+terraform plan -target=module.vpc -target=module.eip -target=module.acm
+terraform apply -target=module.vpc -target=module.eip -target=module.acm
+```
+
+### 3. Review the Full Plan
 ```bash
 terraform plan
 ```
 
-### 3. Apply the Infrastructure
+### 4. Apply the Full Infrastructure
 ```bash
 terraform apply
 ```
 
-### 4. Verify Deployment
+### 5. Verify Deployment
 ```bash
 # Check EC2 instance status
 terraform output ec2_instance_id
@@ -195,6 +203,15 @@ dig *.obgdeb.com
 # Check Docker Compose logs for errors
 docker-compose logs
 ```
+
+#### 5. Forcing EC2 Instance Recreation
+If you need to force Terraform to recreate the EC2 instance (for example, after changing the AMI, user data, or other critical settings), use the following command:
+
+```bash
+terraform taint 'module.ec2.module.ec2_instance.aws_instance.this[0]'
+```
+
+Then re-run `terraform apply` to recreate the instance.
 
 ## Cleanup
 
