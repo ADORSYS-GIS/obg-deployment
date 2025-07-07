@@ -1,15 +1,16 @@
 # Task Description:
 Deploy a multi-container microservices application using Docker Compose on a single AWS EC2 instance, which is placed in a private subnet behind an Application Load Balancer (ALB). The ALB is the public entry point, with HTTPS enabled for all subdomains (*.obgdeb.com) using an ACM certificate. All public access is routed through the ALB, and DNS records point to the ALB. The EC2 instance is not directly exposed to the internet.
 
-![Architecture](./images/network-architecture-aws.png)
+![Architecture](./images/obgdem-aws-architecture-tf-setup.png)
 
 ## Deployment Flow and Architecture
 
 1. **Networking Setup**  
-   - Create a VPC with public and private subnets in single AZ (eu-north-1a).
-   - Deploy a NAT Gateway in the public subnet with an Elastic IP to enable outbound internet access for private subnet resources.  
-   - Application Load Balancer (ALB) is deployed in the public subnet and acts as the public entry point for all traffic.  
-   - Private subnet hosts a single EC2 instance running Docker Compose.  
+   - Create a VPC with public and private subnets in two AZs (eu-north-1a and eu-north-1b).
+   - Deploy a NAT Gateway in the public subnet of AZ1 (10.0.101.0/24) with an Elastic IP to enable outbound internet access for private subnet resources.  
+   - Application Load Balancer (ALB) is deployed across both public subnets and acts as the public entry point for all traffic.  
+   - Private subnet in AZ1 hosts a single EC2 instance running Docker Compose.  
+   - Private subnet in AZ2 is currently empty (reserved for future redundancy or scaling).
    - Route tables ensure the private subnet routes outbound traffic via the NAT Gateway.
    - Security Groups:
      - ALB SG allows inbound HTTP/HTTPS (80/443) from anywhere.
@@ -66,45 +67,38 @@ Deploy a multi-container microservices application using Docker Compose on a sin
 
 ## Current Architecture Status
 
-### ✅ **What's Working:**
-- **VPC**: Single AZ setup with public/private subnets in eu-north-1a
-- **NAT Gateway**: Single NAT Gateway with Elastic IP for private subnet internet access
-- **ALB**: Application Load Balancer with HTTPS termination
-- **EC2**: Single t3.large instance in private subnet
+###  **What's Working:**
+- **VPC**: Two-AZ setup with public/private subnets in eu-north-1a and eu-north-1b
+- **NAT Gateway**: Single NAT Gateway with Elastic IP for private subnet internet access (in AZ1)
+- **ALB**: Application Load Balancer with HTTPS termination, spanning both public subnets
+- **EC2**: Single t3.large instance in private subnet (AZ1)
 - **Security Groups**: Properly configured for ALB → EC2 traffic
 - **DNS**: Route53 with wildcard records pointing to ALB
 - **SSL**: ACM certificate for domain and subdomains
 - **Monitoring**: CloudWatch alarms and metrics
 - **IAM**: Proper roles for EC2 instance
 
-### ✅ **Cost Optimization:**
-- **Single AZ**: Reduced NAT Gateway costs by ~$45/month
+### **Cost Optimization:**
+- **Single EC2 Instance**: Only one instance for cost savings
+- **Single NAT Gateway**: Only one NAT Gateway (in AZ1)
 - **Efficient Resource Usage**: All resources properly utilized
-- **Simple Management**: Single instance, single AZ setup
+- **Simple Management**: Single instance, two-AZ setup for future scalability
 
-### 💰 **Cost Analysis:**
+### 💰 **Cost Analysis (AWS Pricing Calculator Estimate):**
 - **EC2 t3.large**: ~$30/month
 - **NAT Gateway (1 AZ)**: ~$45/month
 - **Route53**: ~$0.50/month
 - **CloudWatch**: ~$5/month
+- **ALB**: ~$18/month
 - **Data Transfer**: Variable
-- **Total**: ~$80/month
+- **Total**: **~$98/month**
 
-## Future Scaling Options
+> For a detailed and up-to-date estimate, use the [AWS Pricing Calculator](https://calculator.aws/#/) and include:
+> - 1x EC2 (t3.large)
+> - 1x ALB
+> - 1x NAT Gateway
+> - 1x Elastic IP
+> - Data transfer, Route53, ACM, CloudWatch, etc.
 
-### Option 1: Multi-Instance Single AZ (High Availability)
-- **Cost**: Additional ~$30/month for second EC2
-- **Changes**: Add second EC2 instance in same AZ
-- **Impact**: Better availability, higher cost
-- **Monthly Cost**: ~$110/month
-
-### Option 2: Multi-AZ Setup (Production Grade)
-- **Cost**: Additional ~$45/month for second AZ
-- **Changes**: Add second AZ with EC2 instance
-- **Impact**: High availability, higher cost
-- **Monthly Cost**: ~$125/month
-
-### Option 3: Keep Current (Development Setup)
-- **Recommendation**: Keep as-is for development/testing
-- **Note**: Cost-optimized single instance setup
-- **Monthly Cost**: ~$80/month
+**Note** 
+Use the price calculator to confirm the price calculations
