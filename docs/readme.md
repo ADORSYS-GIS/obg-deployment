@@ -8,7 +8,7 @@ The architecture supports secure, scalable, and modular deployment of open banki
 ---
 
 ## Architecture
-![obg deployment architecture](./docs/obg-deployment-arch.png)
+![obg deployment architecture](./obg-deployment-arch.png)
 
 ### Application Layer
 - **Traefik** as the main reverse proxy and router
