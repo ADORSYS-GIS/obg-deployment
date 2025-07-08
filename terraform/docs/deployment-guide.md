@@ -57,21 +57,21 @@ output = json
 ## Infrastructure Components
 
 ### What Gets Deployed:
-1. **VPC** with public and private subnets in single AZ (eu-north-1a)
+1. **VPC** with public and private subnets 
 2. **NAT Gateway** with Elastic IP for outbound internet access
 3. **EC2 Instance** (t3.large) in private subnet
 4. **IAM Role** with SSM and CloudWatch permissions
 5. **Security Groups** for HTTP/HTTPS traffic
-6. **Application Load Balancer** with HTTPS termination
+6. **Application Load Balancer** with HTTPS termination spanning all AZs
 7. **ACM Certificate** for `obgdeb.com` and `*.obgdeb.com`
 8. **Route53 DNS Records** (wildcard and main domain)
 9. **CloudWatch Monitoring** with alarms
 
-### Current Architecture Notes:
-- **Single AZ**: Cost-optimized setup with single NAT Gateway
-- **Single Instance**: One EC2 instance for development/testing
-- **Efficient Resource Usage**: All resources properly utilized
-- **Health Check**: ALB uses `/` path for health checks
+### Architecture Notes:
+- **Multi-AZ**: High availability, redundancy, and fault tolerance
+- **No Public IPs on EC2**: All access via ALB
+- **NAT Gateway**: Ensures private subnets have outbound internet
+- **ALB Health Check**: Uses `/` path for all targets
 
 ## Deployment Steps
 
@@ -127,11 +127,6 @@ terraform output alb_zone_id
 ### Health Check
 The ALB health check is configured to use `/` endpoint. Ensure your application serves content at the root path for proper health monitoring.
 
-### Current Architecture Status
-- **Single EC2 Instance**: Running in eu-north-1a private subnet
-- **Single AZ ALB**: Spans single AZ with single target
-- **NAT Gateway**: Single NAT Gateway serving the AZ
-- **Cost**: ~$80/month (cost-optimized setup)
 
 ### EC2 Instance Access
 ```bash
@@ -228,19 +223,10 @@ docker-compose logs
 If you need to force Terraform to recreate the EC2 instance (for example, after changing the AMI, user data, or other critical settings), use the following command:
 
 ```bash
-terraform taint 'module.ec2.module.ec2_instance.aws_instance.this[0]'
+terraform taint 'module.ec2.module.ec2_instance.aws_instance.this[<index>]'
 ```
 
-Then re-run `terraform apply` to recreate the instance.
-
-#### 6. Multi-AZ vs Single Instance Issues
-- **Issue**: ALB shows unhealthy targets despite EC2 being healthy
-- **Cause**: ALB spans both AZs but EC2 is only in one AZ
-- **Solution**: Either add second EC2 instance or switch to single AZ
-
-- **Issue**: High NAT Gateway costs
-- **Cause**: Paying for NAT Gateway in both AZs but only using one
-- **Solution**: Consider single AZ setup for cost optimization
+Replace `<index>` with the instance number. Then re-run `terraform apply` to recreate the instance.
 
 ## Cleanup
 
@@ -263,35 +249,12 @@ aws acm delete-certificate --certificate-arn <cert-arn>
 ```
 
 ## Cost Estimation
-
-### Monthly Costs (approximate):
-- **EC2 t3.large**: ~$30/month
-- **NAT Gateway (1 AZ)**: ~$45/month
-- **Route53**: ~$0.50/month
-- **CloudWatch**: ~$5/month
-- **ACM Certificate**: Free
-- **Data Transfer**: Variable
-
-**Total**: ~$80/month
-
-### Future Scaling Options:
-
-#### Option 1: Multi-Instance Single AZ (High Availability)
-- **Additional Cost**: ~$30/month for second EC2
-- **Changes**: Add second EC2 instance in same AZ
-- **Impact**: Better availability, higher cost
-- **Monthly Cost**: ~$110/month
-
-#### Option 2: Multi-AZ Setup (Production Grade)
-- **Additional Cost**: ~$45/month for second AZ
-- **Changes**: Add second AZ with EC2 instance
-- **Impact**: High availability, higher cost
-- **Monthly Cost**: ~$125/month
-
-#### Option 3: Keep Current (Development Setup)
-- **Recommendation**: Keep as-is for development/testing
-- **Note**: Cost-optimized single instance setup
-- **Monthly Cost**: ~$80/month
+For a detailed and up-to-date estimate, use the [AWS Pricing Calculator](https://calculator.aws/#/) and include:
+- 1x EC2 (t3.large)
+- 1x ALB
+- 1x NAT Gateway
+- 1x Elastic IP
+- Data transfer, Route53, ACM, CloudWatch, etc.
 
 ## Support
 
