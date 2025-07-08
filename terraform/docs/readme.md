@@ -1,7 +1,7 @@
 # Task Description:
 Deploy a multi-container microservices application using Docker Compose on a single AWS EC2 instance, which is placed in a private subnet behind an Application Load Balancer (ALB). The ALB is the public entry point, with HTTPS enabled for all subdomains (*.obgdeb.com) using an ACM certificate. All public access is routed through the ALB, and DNS records point to the ALB. The EC2 instance is not directly exposed to the internet.
 
-![Architecture](./images/obgdem-aws-architecture-tf-setup.png)
+![Architecture](./images/obg-aws-arch.png)
 
 ## Deployment Flow and Architecture
 
@@ -78,27 +78,10 @@ Deploy a multi-container microservices application using Docker Compose on a sin
 - **Monitoring**: CloudWatch alarms and metrics
 - **IAM**: Proper roles for EC2 instance
 
-### **Cost Optimization:**
-- **Single EC2 Instance**: Only one instance for cost savings
-- **Single NAT Gateway**: Only one NAT Gateway (in AZ1)
-- **Efficient Resource Usage**: All resources properly utilized
-- **Simple Management**: Single instance, two-AZ setup for future scalability
-
-### 💰 **Cost Analysis (AWS Pricing Calculator Estimate):**
-- **EC2 t3.large**: ~$30/month
-- **NAT Gateway (1 AZ)**: ~$45/month
-- **Route53**: ~$0.50/month
-- **CloudWatch**: ~$5/month
-- **ALB**: ~$18/month
-- **Data Transfer**: Variable
-- **Total**: **~$98/month**
-
-> For a detailed and up-to-date estimate, use the [AWS Pricing Calculator](https://calculator.aws/#/) and include:
-> - 1x EC2 (t3.large)
-> - 1x ALB
-> - 1x NAT Gateway
-> - 1x Elastic IP
-> - Data transfer, Route53, ACM, CloudWatch, etc.
-
-**Note** 
-Use the price calculator to confirm the price calculations
+## Cost Estimation
+For a detailed and up-to-date estimate, use the [AWS Pricing Calculator](https://calculator.aws/#/) and include:
+- 1x EC2 (t3.large)
+- 1x ALB
+- 1x NAT Gateway
+- 1x Elastic IP
+- Data transfer, Route53, ACM, CloudWatch, etc.

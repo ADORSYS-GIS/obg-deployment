@@ -248,14 +248,6 @@ aws route53 delete-hosted-zone --id <zone-id>
 aws acm delete-certificate --certificate-arn <cert-arn>
 ```
 
-## Cost Estimation
-For a detailed and up-to-date estimate, use the [AWS Pricing Calculator](https://calculator.aws/#/) and include:
-- 1x EC2 (t3.large)
-- 1x ALB
-- 1x NAT Gateway
-- 1x Elastic IP
-- Data transfer, Route53, ACM, CloudWatch, etc.
-
 ## Support
 
 For issues or questions:
