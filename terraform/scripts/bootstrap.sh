@@ -25,7 +25,7 @@ sudo apt-get install -y git
 
 # Clone your Docker Compose deployment
 cd /home/ubuntu
-git clone https://github.com/kouamschekina/obg-deployment.git
+git clone https://github.com/ADORSYS-GIS/obg-deployment.git
 cd obg-deployment
 
 # Run the stack
