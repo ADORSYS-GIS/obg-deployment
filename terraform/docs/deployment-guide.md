@@ -57,14 +57,21 @@ output = json
 ## Infrastructure Components
 
 ### What Gets Deployed:
-1. **VPC** with public and private subnets
+1. **VPC** with public and private subnets 
 2. **NAT Gateway** with Elastic IP for outbound internet access
 3. **EC2 Instance** (t3.large) in private subnet
 4. **IAM Role** with SSM and CloudWatch permissions
 5. **Security Groups** for HTTP/HTTPS traffic
-6. **ACM Certificate** for `obgdeb.com` and `*.obgdeb.com`
-7. **Route53 DNS Records** (wildcard and main domain)
-8. **CloudWatch Monitoring** with alarms
+6. **Application Load Balancer** with HTTPS termination spanning all AZs
+7. **ACM Certificate** for `obgdeb.com` and `*.obgdeb.com`
+8. **Route53 DNS Records** (wildcard and main domain)
+9. **CloudWatch Monitoring** with alarms
+
+### Architecture Notes:
+- **Multi-AZ**: High availability, redundancy, and fault tolerance
+- **No Public IPs on EC2**: All access via ALB
+- **NAT Gateway**: Ensures private subnets have outbound internet
+- **ALB Health Check**: Uses `/` path for all targets
 
 ## Deployment Steps
 
@@ -102,6 +109,10 @@ terraform output hosted_zone_id
 
 # Check certificate status
 terraform output certificate_arn
+
+# Check ALB information
+terraform output alb_dns_name
+terraform output alb_zone_id
 ```
 
 ## Post-Deployment
@@ -112,6 +123,10 @@ terraform output certificate_arn
 - **Fintech Server**: https://fintech-server.obgdeb.com
 - **Consent UI**: https://consent.obgdeb.com
 - **HBCI Sandbox**: https://sandbox.obgdeb.com
+
+### Health Check
+The ALB health check is configured to use `/` endpoint. Ensure your application serves content at the root path for proper health monitoring.
+
 
 ### EC2 Instance Access
 ```bash
@@ -208,10 +223,10 @@ docker-compose logs
 If you need to force Terraform to recreate the EC2 instance (for example, after changing the AMI, user data, or other critical settings), use the following command:
 
 ```bash
-terraform taint 'module.ec2.module.ec2_instance.aws_instance.this[0]'
+terraform taint 'module.ec2.module.ec2_instance.aws_instance.this[<index>]'
 ```
 
-Then re-run `terraform apply` to recreate the instance.
+Replace `<index>` with the instance number. Then re-run `terraform apply` to recreate the instance.
 
 ## Cleanup
 
@@ -232,18 +247,6 @@ aws route53 delete-hosted-zone --id <zone-id>
 # Delete ACM certificate
 aws acm delete-certificate --certificate-arn <cert-arn>
 ```
-
-## Cost Estimation
-
-### Monthly Costs (approximate):
-- **EC2 t3.large**: ~$30/month
-- **NAT Gateway**: ~$45/month
-- **Route53**: ~$0.50/month
-- **CloudWatch**: ~$5/month
-- **ACM Certificate**: Free
-- **Data Transfer**: Variable
-
-**Total**: ~$80-100/month
 
 ## Support
 
